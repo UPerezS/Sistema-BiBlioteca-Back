@@ -7,6 +7,8 @@ app.use(cors());
 app.use(express.json());
 
 //Definición de las Rutas que se usaran.
+const db = require('./database/db');
+
 
 //Aqui se Agregaran las Rutas.
 
