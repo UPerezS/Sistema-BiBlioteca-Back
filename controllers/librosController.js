@@ -1,51 +1,30 @@
-const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // Directorio donde se almacenarán los archivos subidos
+const db = require('../database/db'); // Ajusta la ruta según tu estructura de archivos
 
-// Ejemplo de una lista de libros (simulado como una variable en memoria)
-let books = [];
+// Controlador para insertar un nuevo libro
+exports.insertarLibro = (req, res) => {
+  const { titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus } = req.body;
+  const insertQuery = 'INSERT INTO libros (titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus) VALUES (?, ?, ?, ?, ?, ?)';
 
-// Ruta para obtener todos los libros
-router.get('/books', (req, res) => {
-  res.json(books);
-});
-
-// Ruta para subir un libro
-router.post('/books', upload.single('file'), (req, res) => {
-  const { title, author } = req.body;
-  const file = req.file;
-
-  // Aquí podrías guardar el archivo y los detalles en una base de datos o en algún almacenamiento persistente
-
-  books.push({ title, author, filePath: file.path }); // Añadir libro a la lista (en este caso, al array)
-
-  res.status(201).json({ message: 'Libro subido correctamente' });
-});
-
-// Ruta para borrar un libro por su título
-router.delete('/books/:title', (req, res) => {
-  const titleToDelete = req.params.title;
-
-  // Filtrar el array de libros para eliminar el libro con el título especificado
-  books = books.filter(book => book.title !== titleToDelete);
-
-  res.json({ message: 'Libro eliminado correctamente' });
-});
-
-// Ruta para actualizar un libro por su título
-router.put('/books/:title', (req, res) => {
-  const titleToUpdate = req.params.title;
-  const { author } = req.body;
-
-  // Encontrar el libro por su título y actualizar el autor
-  books.forEach(book => {
-    if (book.title === titleToUpdate) {
-      book.author = author;
+  db.query(insertQuery, [titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus], (err, result) => {
+    if (err) {
+      console.error('Error al insertar el libro:', err);
+      res.status(500).send('Error interno del servidor');
+      return;
     }
+    console.log('Libro insertado correctamente:', result);
+    res.status(200).send('Libro insertado correctamente');
   });
+};
 
-  res.json({ message: 'Libro actualizado correctamente' });
-});
+exports.obtenerLibros = (req, res) => {
+  const selectQuery = 'SELECT * FROM libros';
 
-module.exports = router;
+  db.query(selectQuery, (err, results) => {
+    if (err) {
+      console.error('Error al obtener los libros:', err);
+      res.status(500).send('Error interno del servidor');
+      return;
+    }
+    res.status(200).json(results);
+  });
+};
