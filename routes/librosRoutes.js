@@ -1,20 +1,14 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const booksController = require('./booksController');
+const router = express.Router();
+const librosController = require('../controllers/librosController');
 
-const app = express();
 
-// Middleware para parsear cuerpos de peticiones JSON y formularios
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Ruta para insertar un nuevo libro
+router.post('/libros', librosController.insertarLibro);
+router.get('/libros', librosController.obtenerLibros);
+// Ruta para actualizar un libro por su ID
+router.put('/libros/:id', librosController.actualizarLibro);
+// Ruta para eliminar un libro por su ID
+router.delete('/libros/:id', librosController.eliminarLibro);
 
-// Usar el controlador de libros
-app.use('/api', booksController);
-
-// Puerto en el que escucha el servidor
-const port = process.env.PORT || 3000;
-
-// Iniciar servidor
-app.listen(port, () => {
-  console.log(`Servidor escuchando en http://localhost:${port}`);
-});
+module.exports = router;
