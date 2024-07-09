@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: 'password',
   database: 'biblioteca_sistema_v2',
   ssl:{
     rejectUnauthorized: false
