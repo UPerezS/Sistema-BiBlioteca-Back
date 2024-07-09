@@ -6,8 +6,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'cama8836@gmail.com', // Reemplaza con tu dirección de correo electrónico
-      pass: 'apzd dshh jndn ujsy' // Reemplaza con tu contraseña
+      user: 'cama8836@gmail.com',
+      pass: 'apzd dshh jndn ujsy'
     },
     tls: {
       rejectUnauthorized: false
@@ -17,12 +17,10 @@ const transporter = nodemailer.createTransport({
 exports.registrar = (req, res) => {
     const { nombre, apellido_pa, apellido_ma, correo, contrasena, direccion, telefono, rol, estatus } = req.body;
 
-    // Verificación de campos obligatorios
     if (!nombre || !apellido_pa || !apellido_ma || !correo || !contrasena || !direccion || !telefono) {
         return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    // Hash de la contraseña
     bcrypt.hash(contrasena, 10, (err, hashedPassword) => {
         if (err) {
             console.error('Error al hashear la contraseña:', err.message);
