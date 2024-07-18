@@ -5,7 +5,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'password',
-  database: 'biblioteca_sistema_v2',
+  database: 'BD_Sistema_BiBlioteca',
   ssl:{
     rejectUnauthorized: false
   }

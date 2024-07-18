@@ -4,7 +4,15 @@ const cors = require('cors');
 const app = express();
 const librosRouter= require ('./routes/librosRoutes');
 
-const Libro= require ('./controllers/librosController');
+// Configurar CORS
+app.use(cors({
+    origin: 'http://3.20.43.248:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
+}));
+
+const Libro = require ('./controllers/librosController');
 const port = process.env.PORT || 3500;
 
 app.use(cors());
