@@ -1,6 +1,5 @@
-const db = require('../database/db'); // Ajusta la ruta según tu estructura de archivos
+const db = require('../database/db');
 
-// Controlador para insertar un nuevo libro
 exports.insertarLibro = (req, res) => {
   const { titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus } = req.body;
   const insertQuery = 'INSERT INTO libros (titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus) VALUES (?, ?, ?, ?, ?, ?)';
@@ -15,7 +14,22 @@ exports.insertarLibro = (req, res) => {
     res.status(200).send('Libro insertado correctamente');
   });
 };
+/*
+exports.insertarLibro = (req, res) => {
+  const { titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus, imagen } = req.body;
+  const insertQuery = 'INSERT INTO libros (titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus, imagen) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
+  db.query(insertQuery, [titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus, imagen], (err, result) => {
+    if (err) {
+      console.error('Error al insertar el libro:', err);
+      res.status(500).json({ message: 'Error interno del servidor' });
+      return;
+    }
+    console.log('Libro insertado correctamente:', result);
+    res.status(200).json({ message: 'Libro insertado correctamente', libroId: result.insertId });
+  });
+};
+*/
 exports.obtenerLibros = (req, res) => {
   const selectQuery = 'SELECT * FROM libros';
 
@@ -30,10 +44,7 @@ exports.obtenerLibros = (req, res) => {
 };
 
 
-// Función para actualizar un libro por su ID
-// Función para formatear la fecha a 'YYYY-MM-DD'
 function formatDate(fecha) {
-  // Suponiendo que 'fecha' es un string en formato 'YYYY/MM/DD':
   const parts = fecha.split('/');
   return `${parts[0]}-${parts[1]}-${parts[2]}`;
 }
@@ -42,7 +53,6 @@ exports.actualizarLibro = (req, res) => {
   const id = req.params.id;
   const { titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus } = req.body;
 
-  // Formatear la fecha a 'YYYY-MM-DD'
   const fechaPublicacionFormatted = formatDate(fecha_publicacion);
 
   const updateQuery = `UPDATE libros 
@@ -67,8 +77,6 @@ exports.actualizarLibro = (req, res) => {
     res.status(200).send("Libro actualizado correctamente");
   });
 };
-
-
 
 exports.eliminarLibro = (req, res) => {
   const id = req.params.id;
