@@ -7,5 +7,6 @@ router.post('/libros', librosController.insertarLibro);
 router.get('/libros', librosController.obtenerLibros);
 router.put('/libros/:id', librosController.actualizarLibro);
 router.delete('/libros/:id', librosController.eliminarLibro);
+router.get('/libros/filtrar', librosController.filtrarLibros);
 
 module.exports = router;

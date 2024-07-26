@@ -78,3 +78,33 @@ exports.eliminarLibro = (req, res) => {
     res.status(200).json({ message: "Libro eliminado correctamente" });
   });
 };
+
+exports.filtrarLibros = (req, res) => {
+  const { titulo, autor, genero } = req.query;
+  let selectQuery = 'SELECT * FROM libros WHERE 1=1';
+  const queryParams = [];
+
+  if (titulo) {
+    selectQuery += ' AND titulo_libro LIKE ?';
+    queryParams.push(`%${titulo}%`);
+  }
+
+  if (autor) {
+    selectQuery += ' AND autor LIKE ?';
+    queryParams.push(`%${autor}%`);
+  }
+
+  if (genero) {
+    selectQuery += ' AND genero LIKE ?';
+    queryParams.push(`%${genero}%`);
+  }
+
+  db.query(selectQuery, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error al filtrar los libros:', err);
+      res.status(500).send('Error interno del servidor');
+      return;
+    }
+    res.status(200).json(results);
+  });
+};
