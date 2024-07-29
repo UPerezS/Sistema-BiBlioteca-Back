@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
 exports.registrar = (req, res) => {
     const { nombre, apellido_pa, apellido_ma, correo, contrasena, direccion, telefono, rol, estatus } = req.body;
 
@@ -21,33 +22,44 @@ exports.registrar = (req, res) => {
         return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
-    bcrypt.hash(contrasena, 10, (err, hashedPassword) => {
-        if (err) {
-            console.error('Error al hashear la contraseña:', err.message);
-            return res.status(500).json({ error: 'Error interno del servidor al registrar el usuario' });
+    // Verificar si el correo ya existe
+    db.query('SELECT * FROM usuarios WHERE correo = ?', [correo], (selectErr, selectResult) => {
+        if (selectErr) {
+            console.error('Error al verificar el correo:', selectErr.message);
+            return res.status(500).json({ error: 'Error interno del servidor al verificar el correo' });
         }
 
-        // Datos del nuevo usuario
-        const newUser = {
-            nombre,
-            apellido_pa,
-            apellido_ma,
-            correo,
-            contrasena: hashedPassword,
-            direccion,
-            telefono,
-            rol,
-            estatus
-        };
+        if (selectResult.length > 0) {
+            return res.status(409).json({ error: 'El correo ya está registrado' });
+        }
 
-        // Registro del usuario en la base de datos
-        db.query('INSERT INTO usuarios SET ?', newUser, (dbErr, result) => {
-            if (dbErr) {
-                console.error('Error al registrar el usuario:', dbErr.message);
+        // Si el correo no existe, proceder con el registro
+        bcrypt.hash(contrasena, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error al hashear la contraseña:', err.message);
                 return res.status(500).json({ error: 'Error interno del servidor al registrar el usuario' });
             }
 
-            res.status(201).json({ message: 'Usuario registrado con éxito', userId: result.insertId });
+            const newUser = {
+                nombre,
+                apellido_pa,
+                apellido_ma,
+                correo,
+                contrasena: hashedPassword,
+                direccion,
+                telefono,
+                rol,
+                estatus
+            };
+
+            db.query('INSERT INTO usuarios SET ?', newUser, (dbErr, result) => {
+                if (dbErr) {
+                    console.error('Error al registrar el usuario:', dbErr.message);
+                    return res.status(500).json({ error: 'Error interno del servidor al registrar el usuario' });
+                }
+
+                res.status(201).json({ message: 'Usuario registrado con éxito', userId: result.insertId });
+            });
         });
     });
 };
