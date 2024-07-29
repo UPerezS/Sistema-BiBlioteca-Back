@@ -106,3 +106,16 @@ exports.historialPrestamos = (req, res) => {
       res.status(200).json(result);
     });
   };
+
+  exports.todosPrestamos = (req, res) => {
+    // Consultar todos los préstamos
+    db.query('SELECT p.id_prestamo, p.fecha_prestamo, p.fecha_devolucion, u.nombre AS usuario, l.titulo_libro AS libro FROM prestamos p INNER JOIN usuarios u ON p.id_usuario = u.id_usuario INNER JOIN libros l ON p.id_libro = l.id_libro', (err, result) => {
+      if (err) {
+        console.error('Error al obtener todos los préstamos:', err);
+        res.status(500).json({ message: 'Error interno del servidor' });
+        return;
+      }
+  
+      res.status(200).json(result);
+    });
+  };
