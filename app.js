@@ -11,10 +11,12 @@ app.use(express.json());
 const db = require('./database/db');
 const authRoutes = require('./routes/authRoutes');
 const librosRouter= require ('./routes/librosRoutes');
+const prestamosRouter = require('./routes/prestamosRoutes');
 
 // Aquí se agregarán las Rutas.
 app.use('/auth', authRoutes);
 app.use('/api', librosRouter);
+app.use('/api_prestamos', prestamosRouter);
 
 app.listen(port, () => {
     console.log(`Servidor escuchando en el puerto ${port}`);
