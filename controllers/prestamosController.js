@@ -91,3 +91,18 @@ exports.devolverLibro = (req, res) => {
     });
   });
 };
+
+exports.historialPrestamos = (req, res) => {
+    const id_usuario = req.params.id_usuario; // Obtener el ID del usuario de los parámetros de la ruta
+  
+    // Consultar el historial de préstamos del usuario
+    db.query('SELECT p.id_prestamo, p.fecha_prestamo, p.fecha_devolucion, l.titulo_libro FROM prestamos p INNER JOIN libros l ON p.id_libro = l.id_libro WHERE p.id_usuario = ?', [id_usuario], (err, result) => {
+      if (err) {
+        console.error('Error al obtener historial de préstamos:', err);
+        res.status(500).json({ message: 'Error interno del servidor' });
+        return;
+      }
+  
+      res.status(200).json(result);
+    });
+  };
