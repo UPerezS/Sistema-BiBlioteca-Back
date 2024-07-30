@@ -84,6 +84,8 @@ exports.login = (req, res) => {
                     // Generar un token
                     const token = jwt.sign({ idUsuario, rolUsuario }, 'SQL', { expiresIn: '5m' });
 
+                    req.session.idUsuario = idUsuario; // Agrega el ID de usuario a la sesión
+
                     const mailOptions = {
                         from: 'cama8836@gmail.com', // Reemplaza con tu dirección de correo electrónico
                         to: correoUsuario,
