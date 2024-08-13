@@ -1,4 +1,4 @@
-const db = require('../database/db');
+const db = require ('../database/db');
 
 exports.insertarLibro = (req, res) => {
   const { titulo_libro, autor, fecha_publicacion, genero, estatus_prestamo, estatus, imagen } = req.body;
@@ -65,17 +65,25 @@ exports.actualizarLibro = (req, res) => {
 
 exports.eliminarLibro = (req, res) => {
   const id = req.params.id;
+  
+  const updateQuery = `UPDATE libros SET estatus = ? WHERE id_libro = ?`;
+  const values = [false, id];
 
-  const deleteQuery = `DELETE FROM libros WHERE id_libro = ?`;
-
-  db.query(deleteQuery, [id], (err, result) => {
+  db.query(updateQuery, values, (err, result) => {
     if (err) {
-      console.error("Error al eliminar el libro:", err);
-      res.status(500).json({ message: "Error interno al eliminar el libro" });
+      console.error("Error al desactivar el libro:", err);
+      res.status(500).json({ message: "Error interno al desactivar el libro" });
       return;
     }
-    console.log("Libro eliminado correctamente");
-    res.status(200).json({ message: "Libro eliminado correctamente" });
+
+    if (result.affectedRows === 0) {
+      console.log("No se encontró ningún libro con ese ID para desactivar");
+      res.status(404).json({ message: "No se encontró ningún libro con ese ID para desactivar" });
+      return;
+    }
+
+    console.log("Libro desactivado correctamente");
+    res.status(200).json({ message: "Libro desactivado correctamente" });
   });
 };
 
@@ -107,4 +115,5 @@ exports.filtrarLibros = (req, res) => {
     }
     res.status(200).json(results);
   });
+
 };
