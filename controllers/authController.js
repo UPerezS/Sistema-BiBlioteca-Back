@@ -14,7 +14,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 exports.registrar = (req, res) => {
     const { nombre, apellido_pa, apellido_ma, correo, contrasena, direccion, telefono, rol, estatus } = req.body;
 
@@ -93,35 +92,36 @@ exports.login = (req, res) => {
                     const rolUsuario = results[0].rol;
                     const correoUsuario = results[0].correo;
 
-                    // Generar un token
+                    // Generar token
                     const token = jwt.sign({ idUsuario, rolUsuario }, 'SQL', { expiresIn: '5m' });
 
+                    // RESPONDER PRIMERO (login exitoso)
+                    res.status(200).json({
+                        message: 'Inicio de sesión exitoso',
+                        token,
+                        usuario: {
+                            idUsuario,
+                            rolUsuario,
+                            nombre: results[0].nombre,
+                            correo: results[0].correo
+                        }
+                    });
+
+                    // ENVIAR CORREO EN SEGUNDO PLANO
                     const mailOptions = {
-                        from: 'cama8836@gmail.com', // Reemplaza con tu dirección de correo electrónico
+                        from: 'cama8836@gmail.com',
                         to: correoUsuario,
                         subject: 'Verificación de Correo Electrónico',
-                        text: `¡Bienvenido!\n\nTu Token de verificación Fue:\n\n${token}`
+                        text: `¡Bienvenido!\n\nTu Token de verificación fue:\n\n${token}`
                     };
 
-                    transporter.sendMail(mailOptions, (error, info) => {
-                        if (error) {
-                            console.error('Error al enviar el correo electrónico:', error);
-                            return res.status(500).json({ message: 'Error al enviar el correo electrónico' });
-                        }
-
-                        console.log('Correo electrónico enviado:', info.response);
-
-                        return res.status(200).json({
-                            message: 'Inicio de sesión exitoso',
-                            token,
-                            usuario: {
-                                idUsuario,
-                                rolUsuario,
-                                nombre: results[0].nombre,
-                                correo: results[0].correo
-                            }
+                    transporter.sendMail(mailOptions)
+                        .then(info => {
+                            console.log('Correo enviado:', info.response);
+                        })
+                        .catch(error => {
+                            console.error('No se pudo enviar el correo (login permitido):', error.message);
                         });
-                    });
                 } else {
                     return res.status(401).json({ message: 'Credenciales incorrectas' });
                 }

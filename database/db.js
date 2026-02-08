@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
 // Configura la conexión a la base de datos
 const db = mysql.createConnection({
-  host: 'mysql-db',
+  host: 'localhost',
   user: 'root',
-  password: 'root',
-  database: 'BD_Sistema_BiBlioteca',
+  password: 'PassWord1*',
+  database: 'DB_Sistema_BiBlioteca',
   ssl:{
     rejectUnauthorized: false
   }
